@@ -1,0 +1,17 @@
+VGG es una familia de arquitecturas de redes neuronales convolucionales
+propuesta por Karen Simonyan y Andrew Zisserman en el 2014. Estos 
+modelos son modificaciones más profundas de la arquitectura de AlexNet. 
+Las VGGS de popularizaron debido a que propusieron una meta-arquitectura 
+general para clasificación de imágenes con profundidad variable que 
+alcanza una mejora significativa sobre AlexNet. Así mismo, estas redes 
+estuvieron entre las primeras en ser extendidas para tareas de visión 
+más complejas como la segmentación. De manera general, la familia VGG se
+componen de 5 bloques. Cada bloque contiene una cantidad de variable de 
+capas convolucionales con una misma cantidad de filtros. Al final de cada
+bloque se encuentra una operación de agrupación por máximas (o Max 
+Pooling) que reduce la resolución visual de representación. Finalmente, 
+las VGGs usan 3 capas lineales para la clasificación al igual que AlexNet. 
+Los modelos de VGG se denominan por el total de capas que contienen, así 
+existen VGG 11, VGG 13, VGG 16 y VGG 19. Siendo VGG 19 la más profunda, 
+esta obtiene el mayor rendimiento en ImageNet con un accuracy de 74.5 y 
+un top-5-accuracy de 92.0.

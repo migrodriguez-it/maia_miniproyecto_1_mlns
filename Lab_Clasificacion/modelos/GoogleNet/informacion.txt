@@ -1,0 +1,21 @@
+GoogleNet fue propuesta por Christian Szegedy, Wei Liu y Andrew 
+Rabinovich junto con otros investigadores de Google en el 2014. Esta
+red es conocida por ser la ganadora del challenge de ImageNet en 
+2014 y por haber sido la red más eficiente y profunda de su época. 
+GoogleNet propuso una nueva arquitectura que permite entrenar redes
+más profundas. Para ello, crean un nuevo tipo de bloque llamado 
+Inception. El nombre de este bloque proviene de la famosa película 
+del mismo nombre estrenada en el 2010, dirigida por Christopher 
+Nolan y protagonizada Leonardo DiCaprio. Pues en dicha película los
+personajes mencionan que deben ir "más profundo" en los sueños. Así,
+los bloques Inception utilizan varias capas convolucionales de 
+diferentes dimensiones para variar el tamaño del espacio de 
+representación, lo cual demostró un gran desempeño y eficiencia. 
+Inclusive, GoogleNet también es conocida como Inception V1 (Version 1).
+Al igual que las VGGs, GoogleNet fue de los primeros modelos en ser 
+utilizados para segmentación y detección en imágenes. La arquitectura
+de GoogleNet cuenta con 21 capas convolucionales, 4 operaciones de 
+agrupamiento por máximos (Max Pooling), 1 operación de agrupamiento 
+por promedio (Average Pooling) y una capa lineal final para 
+clasificación. GoogleNet alcanza un desempeño en ImageNet de 69.8 en 
+accuracy y 93.3 de top-5-accuracy. 

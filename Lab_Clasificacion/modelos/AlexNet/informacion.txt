@@ -1,0 +1,17 @@
+AlexNet fue formulada en el 2012 por Alex Krizhevsky, Ilya Sutskever y 
+Geoffrey E. Hinton (el inventor de la retropropagación). Esta red fue 
+una de las primeras redes neuronales convolucionales famosas en la 
+historia. En especial, AlexNet es conocida por ser la red neuronal 
+convolucional que demostró el potencial del Deep Learning. Esto debido 
+a que AlexNet fue utilizada para ganar el challenge de reconocimiento 
+de imagenes en ImageNet que consiste en clasificar millones de imágenes
+automáticamente. AlexNet venció a todos los modelos anteriores con una
+gran diferencia y fue el estado del arte en clasificación de imágenes 
+en su tiempo. Así mismo, el artículo de AlexNet hace enfasisi en la 
+importancia de la profundidad y de sus multiples capas convolucionales
+para su gran desempeño. La arquitectura de AlexNet es muy parecida a la
+de LeNet que fue la primera red neuronal convolucional propuesta por 
+Yann LeCunn. AlexNet consta de 5 capas convolucionales, 3 operaciones 
+de agrupación por maximos (o Max Pooling) y 3 son capas lineales al 
+final para clasificación. El desempeño de AlexNet en ImageNet es un 
+accuracy de 63.6 y un top-5-accuracy de 84.3.

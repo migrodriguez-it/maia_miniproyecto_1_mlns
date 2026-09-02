@@ -1,0 +1,24 @@
+DenseNet es una familia de métodos creada por Gao Huang, Zhuang Liu,
+Laurens van der Maaten y Kilian Q. Weinberger en el 2016. Estos
+modelos son una nueva generación de arquitecturas con un alta
+profundidad. En especial, DenseNet se basa en un otro modelo muy
+conocido llamado ResNet. Este ultimo se popularizo por utilizar
+conecciones residuales (de ahí su nombre Res-Net), las cuales
+consisten en sumar la salida de una capa (o una serie de capas) con 
+la entrada para así combinar representaciones en diferentes etapas. 
+Por ende, las conexiones residuales facilitan el retropropagación 
+al entrenar y permiten crear arquitecturas mucho más profundas. Así,
+DenseNet explota este concepto y formula los bloques densos, los 
+cuales consisten en una serie de capas convolucionales donde la 
+entrada de capa es sumada a la salida de todas las copas 
+consiguientes en el bloque (conexiones residuales densas). Las 
+arquitecturas de DenseNet cuentan con 4 bloques densos intercalados
+con 3 capas de transición que disminuyen tanto la resolución como el
+espacio de representación. Similar a las VGGs, las DenseNets son 
+denominadas según el número total de capas que contienen, y existen
+DenseNet 121, DenseNet 169, DenseNet 201 y DenseNet 264. Debido a 
+que las DenseNets son arquitecturas muy pesadas, utilizaremos la más
+pequeña que es DenseNet 121 y cuenta con 121 capas en total. Esta 
+red alcanza un desempeño en ImageNet de 74.9 en accuracy y 92.3 en
+top-5-accuracy.
+

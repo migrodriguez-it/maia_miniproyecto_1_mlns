@@ -1,0 +1,26 @@
+{
+"AlexNet": 
+    {
+        "desviacion": 1, 
+        "medias": [104, 117, 123], 
+        "tamano": [224,224]
+    },
+"DenseNet_121": 
+    {
+        "desviacion": 0.007843, 
+        "medias": [127.5, 127.5, 127.5], 
+        "tamano": [224,224]
+    },
+"GoogleNet": 
+    {
+        "desviacion": 1, 
+        "medias": [104, 117, 123], 
+        "tamano": [224,224]
+    },
+"VGG_19": 
+    {
+        "desviacion": 1, 
+        "medias": [104, 117, 123], 
+        "tamano": [224,224]
+    }
+}
