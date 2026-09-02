@@ -2,4 +2,4 @@ microproyecto1_paleta_colores.ipynb
 *.venv
 *.idea
 *pesos*
-*.gitignore
+*.gitignore*
