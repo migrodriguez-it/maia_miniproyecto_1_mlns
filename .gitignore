@@ -1,5 +1,8 @@
 microproyecto1.ipynb
+Microproyecto1_MLNS_v2.ipynb
 *.venv
 *.idea
 *pesos*
 *.gitignore*
+.gitignore
+*/drafts/*
