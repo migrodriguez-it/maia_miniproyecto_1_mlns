@@ -1,0 +1,339 @@
+<html>
+<head>
+<title>Microproyecto1_MLNS v2.ipynb</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.s1 { color: #cf8e6d;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #2aacb8;}
+.s5 { color: #7a7e85;}
+.ls0 { height: 1px; border-width: 0; color: #43454a; background-color:#43454a}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Microproyecto1_MLNS v2.ipynb</font>
+</center></td></tr></table>
+<pre><span class="s0">#%% md 
+# MicroProyecto # 1 de Machine Learning No Supervisado — MAIA 
+ 
+**Nombre de los estudiantes:**  Jairo Alexander López Garcia -  Miguel Angel Rodriguez Marin 
+ 
+**Código:**  `202615506`  -  `202612426` 
+ 
+**Maestría:** Maestría en Inteligencia Artificial (MAIA) 
+ 
+**Fecha:**  06/09/2026 
+ <hr class="ls0">#%% md 
+## 0. Importación de librerías requeridas 
+ 
+Importaremos las librerías `numpy`, `os` y `cv2` para la carga y procesamiento de las imágenes, así como la librería `scikit_learn` para usar los algoritmos de agrupación y la librería `matplotlib` para visualizar las imágenes resultantes: <hr class="ls0">#%% 
+</span><span class="s1">import </span><span class="s0">numpy </span><span class="s1">as </span><span class="s0">np</span>
+<span class="s1">import </span><span class="s0">os</span>
+<span class="s1">import </span><span class="s0">cv2</span>
+<span class="s1">import </span><span class="s0">matplotlib</span><span class="s2">.</span><span class="s0">pyplot </span><span class="s1">as </span><span class="s0">plt</span>
+<span class="s1">from </span><span class="s0">sklearn</span><span class="s2">.</span><span class="s0">manifold </span><span class="s1">import </span><span class="s0">TSNE</span>
+<span class="s1">from </span><span class="s0">sklearn</span><span class="s2">.</span><span class="s0">pipeline </span><span class="s1">import </span><span class="s0">Pipeline</span>
+<span class="s1">from </span><span class="s0">sklearn</span><span class="s2">.</span><span class="s0">preprocessing </span><span class="s1">import </span><span class="s0">FunctionTransformer</span>
+<span class="s1">from </span><span class="s0">sklearn</span><span class="s2">.</span><span class="s0">metrics </span><span class="s1">import </span><span class="s0">silhouette_score</span>
+<span class="s1">from </span><span class="s0">sklearn</span><span class="s2">.</span><span class="s0">cluster </span><span class="s1">import </span><span class="s0">KMeans</span><hr class="ls0"><span class="s0">#%% md 
+## 1. Recopilación de un conjunto diverso de imágenes en diferentes estilos artísticos 
+ 
+Recopilación de un conjunto diverso de imágenes en diferentes estilos artísticos (al menos tres estilos o pintores), a partir del repositorio. Al comienzo del notebook se deben mostrar las imágenes seleccionadas (entre 6 – 10 imágenes), explicando, de manera breve, la motivación para su selección. <hr class="ls0">#%% md 
+&lt;h3&gt;Imágenes del conjunto de datos&lt;/h3&gt; 
+ 
+Estas imágenes fueron elegidas porque representan diferentes corrientes artísticas y contienen una amplia diversidad cromática. Esto resulta útil para comprobar si el modelo es capaz de agrupar correctamente los colores presentes en cada una de ellas. Asimismo, al contar con varias  tonalidades de alto contraste, se puede validar con una mejor claridad si la clasificación y la creación de la paleta de colores se están realizando de manera correcta. 
+ 
+Las cuales son las siguientes: <hr class="ls0">#%% 
+imagenes </span><span class="s2">= []</span>
+
+<span class="s0">carpeta_imagenes </span><span class="s2">= </span><span class="s3">'imagenes'</span>
+
+<span class="s0">figura</span><span class="s2">, </span><span class="s0">ejes </span><span class="s2">= </span><span class="s0">plt</span><span class="s2">.</span><span class="s0">subplots</span><span class="s2">(</span><span class="s4">3</span><span class="s2">, </span><span class="s4">3</span><span class="s2">, </span><span class="s0">figsize</span><span class="s2">=(</span><span class="s4">16</span><span class="s2">, </span><span class="s4">8</span><span class="s2">))</span>
+
+<span class="s1">for </span><span class="s0">carpeta_actual</span><span class="s2">, </span><span class="s0">subcarpetas</span><span class="s2">, </span><span class="s0">archivos </span><span class="s1">in </span><span class="s0">os</span><span class="s2">.</span><span class="s0">walk</span><span class="s2">(</span><span class="s0">carpeta_imagenes</span><span class="s2">):</span>
+    <span class="s1">for </span><span class="s0">archivo </span><span class="s1">in </span><span class="s0">archivos</span><span class="s2">:</span>
+        <span class="s1">if </span><span class="s0">archivo</span><span class="s2">.</span><span class="s0">lower</span><span class="s2">().</span><span class="s0">endswith</span><span class="s2">((</span><span class="s3">'.jpg'</span><span class="s2">)):</span>
+            <span class="s0">ruta_completa </span><span class="s2">= </span><span class="s0">os</span><span class="s2">.</span><span class="s0">path</span><span class="s2">.</span><span class="s0">join</span><span class="s2">(</span><span class="s0">carpeta_actual</span><span class="s2">, </span><span class="s0">archivo</span><span class="s2">)</span>
+            <span class="s0">imagenes</span><span class="s2">.</span><span class="s0">append</span><span class="s2">([</span><span class="s0">ruta_completa</span><span class="s2">, </span><span class="s0">archivo</span><span class="s2">])</span>
+
+<span class="s1">for </span><span class="s0">posicion </span><span class="s1">in </span><span class="s0">range</span><span class="s2">(</span><span class="s0">len</span><span class="s2">(</span><span class="s0">imagenes</span><span class="s2">)):</span>
+    <span class="s0">ruta</span><span class="s2">, </span><span class="s0">archivo </span><span class="s2">= </span><span class="s0">imagenes</span><span class="s2">[</span><span class="s0">posicion</span><span class="s2">]</span>
+
+    <span class="s0">imagen_rgb </span><span class="s2">= </span><span class="s0">plt</span><span class="s2">.</span><span class="s0">imread</span><span class="s2">(</span><span class="s0">ruta</span><span class="s2">)</span>
+
+    <span class="s0">ejes</span><span class="s2">.</span><span class="s0">flat</span><span class="s2">[</span><span class="s0">posicion</span><span class="s2">].</span><span class="s0">imshow</span><span class="s2">(</span><span class="s0">imagen_rgb</span><span class="s2">)</span>
+    <span class="s0">ejes</span><span class="s2">.</span><span class="s0">flat</span><span class="s2">[</span><span class="s0">posicion</span><span class="s2">].</span><span class="s0">set_title</span><span class="s2">(</span><span class="s0">archivo</span><span class="s2">, </span><span class="s0">fontsize</span><span class="s2">=</span><span class="s4">8</span><span class="s2">)</span>
+    <span class="s0">ejes</span><span class="s2">.</span><span class="s0">flat</span><span class="s2">[</span><span class="s0">posicion</span><span class="s2">].</span><span class="s0">axis</span><span class="s2">(</span><span class="s3">'off'</span><span class="s2">)</span>
+
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">suptitle</span><span class="s2">(</span><span class="s3">'Imagenes seleccionadas'</span><span class="s2">)</span>
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">tight_layout</span><span class="s2">()</span>
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">show</span><span class="s2">()</span><hr class="ls0"><span class="s0">#%% md 
+## 2. Preparación de los datos 
+### 2.1 Carga de los datos  
+ 
+Las imagenes las almacenamos en una carpeta llamada &quot;imagenes&quot;; posteriormente creamos una funcion `cargar_imagenes()` para la carga de las imágenes de la carpeta y utilizaremos funciones como `imread()` y `cvtColor()` para realizar la carga y procesamiento de cada una: <hr class="ls0">#%% 
+root_path </span><span class="s2">= </span><span class="s3">'imagenes'</span>
+<span class="s0">img_files </span><span class="s2">= </span><span class="s0">os</span><span class="s2">.</span><span class="s0">listdir</span><span class="s2">(</span><span class="s0">root_path</span><span class="s2">)</span>
+<span class="s0">img_files</span><hr class="ls0"><span class="s0">#%% 
+</span><span class="s1">def </span><span class="s0">cargar_imagenes</span><span class="s2">(</span><span class="s0">root_path</span><span class="s2">, </span><span class="s0">file_names</span><span class="s2">):</span>
+    <span class="s0">image_list </span><span class="s2">= </span><span class="s0">list</span><span class="s2">()</span>
+    <span class="s1">for </span><span class="s0">file </span><span class="s1">in </span><span class="s0">file_names</span><span class="s2">:</span>
+        <span class="s0">img </span><span class="s2">= </span><span class="s0">cv2</span><span class="s2">.</span><span class="s0">imread</span><span class="s2">(</span><span class="s0">os</span><span class="s2">.</span><span class="s0">path</span><span class="s2">.</span><span class="s0">join</span><span class="s2">(</span><span class="s0">root_path</span><span class="s2">, </span><span class="s0">file</span><span class="s2">))</span>
+        <span class="s0">img </span><span class="s2">= </span><span class="s0">cv2</span><span class="s2">.</span><span class="s0">cvtColor</span><span class="s2">(</span><span class="s0">img</span><span class="s2">, </span><span class="s0">cv2</span><span class="s2">.</span><span class="s0">COLOR_BGR2RGB</span><span class="s2">)</span>
+        <span class="s0">image_list</span><span class="s2">.</span><span class="s0">append</span><span class="s2">(</span><span class="s0">img</span><span class="s2">)</span>
+    <span class="s1">return </span><span class="s0">image_list</span><hr class="ls0"><span class="s0">#%% md 
+Cargamos las imagenes originales sin modificaciones en el arreglo 'img_original'  para despues ser utilizadas en el modelo generado <hr class="ls0">#%% 
+img_original </span><span class="s2">= </span><span class="s0">cargar_imagenes</span><span class="s2">(</span><span class="s0">root_path</span><span class="s2">, </span><span class="s0">img_files</span><span class="s2">)</span>
+<span class="s0">img_original</span><hr class="ls0"><span class="s0">#%% md 
+### 2.2 Normalización de los datos 
+Se creó la función preparar_imagen() la cual recibe una imagen y la normaliza convertiendola en una lista de píxeles, ajustando sus valores al rango [0, 1]. Esto se hace porque las imágenes están en formato RGB, con esta normalización los valores quedan estandarizados y el conjunto de datos queda en una escala uniforme. <hr class="ls0">#%% 
+</span><span class="s1">def </span><span class="s0">preparar_imagen</span><span class="s2">(</span><span class="s0">img</span><span class="s2">):</span>
+    <span class="s0">img </span><span class="s2">= </span><span class="s0">img</span><span class="s2">.</span><span class="s0">reshape</span><span class="s2">((-</span><span class="s4">1</span><span class="s2">, </span><span class="s4">3</span><span class="s2">))</span>
+    <span class="s0">img </span><span class="s2">= </span><span class="s0">img </span><span class="s2">/ </span><span class="s4">255.0</span>
+    <span class="s1">return </span><span class="s0">img</span><hr class="ls0"><span class="s0">#%% md 
+## 3. Construcción del pipeline de preparación de datos. <hr class="ls0">#%% md 
+Creamos un pipeline el cual tiene dos pasos, preparacion que llama la función preparar_imagen() yluego ejecuta el modelo, en este caso se usa el algoritmo de Kmeans.  <hr class="ls0">#%% 
+</span><span class="s1">def </span><span class="s0">crear_pipeline</span><span class="s2">(</span><span class="s0">num_clusters</span><span class="s2">):</span>
+    <span class="s0">pipeline </span><span class="s2">= </span><span class="s0">Pipeline</span><span class="s2">([</span>
+        <span class="s2">(</span><span class="s3">'preparacion'</span><span class="s2">, </span><span class="s0">FunctionTransformer</span><span class="s2">(</span><span class="s0">preparar_imagen</span><span class="s2">)),</span>
+        <span class="s2">(</span><span class="s3">'modelo'</span><span class="s2">, </span><span class="s0">KMeans</span><span class="s2">(</span><span class="s0">n_clusters</span><span class="s2">=</span><span class="s0">num_clusters</span><span class="s2">,</span><span class="s0">random_state</span><span class="s2">=</span><span class="s4">42</span><span class="s2">))</span>
+    <span class="s2">])</span>
+    
+    <span class="s1">return </span><span class="s0">pipeline</span><hr class="ls0"><span class="s0">#%% md 
+## 4. Construcción del modelo de agrupación con el algoritmo seleccionado con búsqueda de hiperparámetros,. <hr class="ls0">#%% md 
+### 4.1 Funcion de Busqueda de hiperparametros  
+Como se mencionó anteriormente, para el modelo de agrupación, se seleccionó K-means como algoritmo principal, permitiendonos agrupar los valores RGB en grupos homogéneos según su similitud, tambien realizando una búsqueda de hiperparámetros para ajustar el número de grupos K, teniendo en cuenta que obra tiene una paleta de colores distinta, con diferente nivel de complejidad y distribución de colores, y al final creamos un método el cual contruye un modelo de agrupación independiente para cada imagen y para ello con el uso del metodo de la silueta porque permite evaluar simultáneamente qué tan cohesionados se encuentran los elementos de un mismo grupo y qué tan separados están respecto a los demás grupos, permitiendo seleccionar el valor de K más adecuado para cada imagen. <hr class="ls0">#%% 
+</span><span class="s1">def </span><span class="s0">seleccionar_k</span><span class="s2">(</span><span class="s0">img</span><span class="s2">, </span><span class="s0">k_min</span><span class="s2">=</span><span class="s4">3</span><span class="s2">, </span><span class="s0">k_max</span><span class="s2">=</span><span class="s4">20</span><span class="s2">, </span><span class="s0">muestra</span><span class="s2">=</span><span class="s4">5000</span><span class="s2">):</span>
+    <span class="s0">pixels </span><span class="s2">= </span><span class="s0">preparar_imagen</span><span class="s2">(</span><span class="s0">img</span><span class="s2">)</span>
+    <span class="s5"># Tomar muestra aleatoria para que sea más rápido</span>
+    <span class="s0">np</span><span class="s2">.</span><span class="s0">random</span><span class="s2">.</span><span class="s0">seed</span><span class="s2">(</span><span class="s4">42</span><span class="s2">)</span>
+    <span class="s0">indices </span><span class="s2">= </span><span class="s0">np</span><span class="s2">.</span><span class="s0">random</span><span class="s2">.</span><span class="s0">choice</span><span class="s2">(</span>
+        <span class="s0">len</span><span class="s2">(</span><span class="s0">pixels</span><span class="s2">),</span>
+        <span class="s0">size</span><span class="s2">=</span><span class="s0">min</span><span class="s2">(</span><span class="s0">muestra</span><span class="s2">, </span><span class="s0">len</span><span class="s2">(</span><span class="s0">pixels</span><span class="s2">)),</span>
+        <span class="s0">replace</span><span class="s2">=</span><span class="s1">False</span>
+    <span class="s2">)</span>
+    <span class="s0">pixels_muestra </span><span class="s2">= </span><span class="s0">pixels</span><span class="s2">[</span><span class="s0">indices</span><span class="s2">]</span>
+
+    <span class="s0">mejor_k </span><span class="s2">= </span><span class="s1">None</span>
+    <span class="s0">mejor_score </span><span class="s2">= -</span><span class="s4">1</span>
+    
+    <span class="s1">for </span><span class="s0">k </span><span class="s1">in </span><span class="s0">range</span><span class="s2">(</span><span class="s0">k_min</span><span class="s2">, </span><span class="s0">k_max </span><span class="s2">+ </span><span class="s4">1</span><span class="s2">):</span>
+        <span class="s0">modelo </span><span class="s2">= </span><span class="s0">KMeans</span><span class="s2">(</span>
+            <span class="s0">n_clusters</span><span class="s2">=</span><span class="s0">k</span><span class="s2">,</span>
+            <span class="s0">random_state</span><span class="s2">=</span><span class="s4">42</span>
+        <span class="s2">)</span>
+        <span class="s0">labels </span><span class="s2">= </span><span class="s0">modelo</span><span class="s2">.</span><span class="s0">fit_predict</span><span class="s2">(</span><span class="s0">pixels_muestra</span><span class="s2">)</span>
+
+        <span class="s0">score </span><span class="s2">= </span><span class="s0">silhouette_score</span><span class="s2">(</span>
+            <span class="s0">pixels_muestra</span><span class="s2">,</span>
+            <span class="s0">labels</span>
+        <span class="s2">)</span>
+        <span class="s0">print</span><span class="s2">(</span><span class="s3">f&quot;K=</span><span class="s1">{</span><span class="s0">k</span><span class="s1">} </span><span class="s3">- Silhouette Score=</span><span class="s1">{</span><span class="s0">score</span><span class="s1">:</span><span class="s3">.4f</span><span class="s1">}</span><span class="s3">&quot;</span><span class="s2">)</span>
+
+        <span class="s1">if </span><span class="s0">score </span><span class="s2">&gt; </span><span class="s0">mejor_score</span><span class="s2">:</span>
+            <span class="s0">mejor_score </span><span class="s2">= </span><span class="s0">score</span>
+            <span class="s0">mejor_k </span><span class="s2">= </span><span class="s0">k</span>
+
+    <span class="s0">print</span><span class="s2">(</span><span class="s3">f&quot;</span><span class="s1">\n</span><span class="s3">Mejor número de grupos: </span><span class="s1">{</span><span class="s0">mejor_k</span><span class="s1">}</span><span class="s3">&quot;</span><span class="s2">)</span>
+    
+    <span class="s1">return </span><span class="s0">mejor_k</span><hr class="ls0"><span class="s0">#%% md 
+Para probar si la funcion se esta ejecutando correctamente, vamos a probar con la imagen #5 (img_original[5]) del conjunto de imagenes seleccionado, almacenaremos el resultado de K en la variable num_clusters la cual luego la usaremos en el pipeline. <hr class="ls0">#%% 
+num_clusters </span><span class="s2">= </span><span class="s0">seleccionar_k</span><span class="s2">(</span><span class="s0">img_original</span><span class="s2">[</span><span class="s4">5</span><span class="s2">])</span><hr class="ls0"><span class="s0">#%% md 
+### 4.2 Construcción de modelo de agrupacion 
+Para la construcción del modelo de agrupación se ha escogido el algoritomo Kmeans el cual es un algoritmo de aprendizaje no supervisado y nos permite agrupar objetos que comparten caracterisitcas similares, en este caso, colores similares. 
+ 
+Para ejecutar el Pipeline, el cual tiene la preparacion de la imagen y luego la ejecución del algoritmo vamos a tomar la imagen 5 del conjunto de imagen y entregamos al pipeline el hiperparametro K el cual habiamos calculado previamente y almacenamos en la variable num_clusters <hr class="ls0">#%% 
+pipeline </span><span class="s2">= </span><span class="s0">crear_pipeline</span><span class="s2">(</span><span class="s0">num_clusters</span><span class="s2">)</span>
+<span class="s0">pipeline</span><span class="s2">.</span><span class="s0">fit</span><span class="s2">(</span><span class="s0">img_original</span><span class="s2">[</span><span class="s4">5</span><span class="s2">])</span><hr class="ls0"><span class="s0">#%% md 
+Almacenamos el resultado del modelo, el centroide obtenido y las etiquetas, las cuales las usaremos para la construcción de la paleta. <hr class="ls0">#%% 
+kmeans_model </span><span class="s2">= </span><span class="s0">pipeline</span><span class="s2">.</span><span class="s0">named_steps</span><span class="s2">[</span><span class="s3">'modelo'</span><span class="s2">]</span>
+<span class="s0">labels </span><span class="s2">= </span><span class="s0">kmeans_model</span><span class="s2">.</span><span class="s0">labels_</span>
+<span class="s0">centroids </span><span class="s2">= </span><span class="s0">kmeans_model</span><span class="s2">.</span><span class="s0">cluster_centers_</span>
+<hr class="ls0"><span class="s0">#%% md 
+## 5.Construcción de la función que transforma los grupos de colores identificados en un muestrario representativo <hr class="ls0">#%% md 
+Creamos la funcion que nos permite crear la paleta de colores, la cual toma como color dominante el centroide. <hr class="ls0">#%% 
+</span><span class="s1">def </span><span class="s0">crear_paleta</span><span class="s2">(</span><span class="s0">colors</span><span class="s2">, </span><span class="s0">counts</span><span class="s2">, </span><span class="s0">width</span><span class="s2">=</span><span class="s4">600</span><span class="s2">, </span><span class="s0">height</span><span class="s2">=</span><span class="s4">120</span><span class="s2">):</span>
+    <span class="s0">paleta </span><span class="s2">= </span><span class="s0">np</span><span class="s2">.</span><span class="s0">zeros</span><span class="s2">((</span><span class="s0">height</span><span class="s2">, </span><span class="s0">width</span><span class="s2">, </span><span class="s4">3</span><span class="s2">), </span><span class="s0">dtype</span><span class="s2">=</span><span class="s0">np</span><span class="s2">.</span><span class="s0">uint8</span><span class="s2">)</span>
+    
+    <span class="s0">total </span><span class="s2">= </span><span class="s0">counts</span><span class="s2">.</span><span class="s0">sum</span><span class="s2">()</span>
+    <span class="s0">start_x </span><span class="s2">= </span><span class="s4">0</span>
+    
+    <span class="s1">for </span><span class="s0">color</span><span class="s2">, </span><span class="s0">count </span><span class="s1">in </span><span class="s0">zip</span><span class="s2">(</span><span class="s0">colors</span><span class="s2">, </span><span class="s0">counts</span><span class="s2">):</span>
+        <span class="s0">end_x </span><span class="s2">= </span><span class="s0">start_x </span><span class="s2">+ </span><span class="s0">int</span><span class="s2">((</span><span class="s0">count </span><span class="s2">/ </span><span class="s0">total</span><span class="s2">) * </span><span class="s0">width</span><span class="s2">)</span>
+        <span class="s0">paleta</span><span class="s2">[:, </span><span class="s0">start_x</span><span class="s2">:</span><span class="s0">end_x</span><span class="s2">, :] = </span><span class="s0">color</span>
+        <span class="s0">start_x </span><span class="s2">= </span><span class="s0">end_x</span>
+
+    <span class="s1">return </span><span class="s0">paleta</span><hr class="ls0"><span class="s0">#%% md 
+Ordenamos el resultado y luego escalamos el resultado de los centroides <hr class="ls0">#%% 
+counts </span><span class="s2">= </span><span class="s0">np</span><span class="s2">.</span><span class="s0">bincount</span><span class="s2">(</span><span class="s0">labels</span><span class="s2">)</span>
+<span class="s5"># Ordenamos colores de mayor a menor</span>
+<span class="s0">sorted_idx </span><span class="s2">= </span><span class="s0">np</span><span class="s2">.</span><span class="s0">argsort</span><span class="s2">(</span><span class="s0">counts</span><span class="s2">)[::-</span><span class="s4">1</span><span class="s2">]</span>
+<span class="s0">centroids </span><span class="s2">= </span><span class="s0">centroids</span><span class="s2">[</span><span class="s0">sorted_idx</span><span class="s2">]</span>
+<span class="s0">counts </span><span class="s2">= </span><span class="s0">counts</span><span class="s2">[</span><span class="s0">sorted_idx</span><span class="s2">]</span>
+
+<span class="s5"># Como habiamos normalizado los colores, necesitamos nuevamente ajustarlos para que no queden en el rango de 0 y 1 y nos de una paleta de negros</span>
+<span class="s0">centroids </span><span class="s2">= (</span><span class="s0">centroids </span><span class="s2">* </span><span class="s4">255</span><span class="s2">).</span><span class="s0">astype</span><span class="s2">(</span><span class="s0">np</span><span class="s2">.</span><span class="s0">uint8</span><span class="s2">)</span>
+<hr class="ls0"><span class="s0">#%% 
+paleta_final </span><span class="s2">= </span><span class="s0">crear_paleta</span><span class="s2">(</span><span class="s0">centroids</span><span class="s2">, </span><span class="s0">counts</span><span class="s2">)</span><hr class="ls0"><span class="s0">#%% md 
+Usamos los resultados para mostrar la imagen original y la paleta generada <hr class="ls0">#%% 
+plt</span><span class="s2">.</span><span class="s0">figure</span><span class="s2">(</span><span class="s0">figsize</span><span class="s2">=(</span><span class="s4">12</span><span class="s2">, </span><span class="s4">5</span><span class="s2">))</span>
+
+<span class="s5"># Imagen original</span>
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">subplot</span><span class="s2">(</span><span class="s4">1</span><span class="s2">, </span><span class="s4">2</span><span class="s2">, </span><span class="s4">1</span><span class="s2">)</span>
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">title</span><span class="s2">(</span><span class="s3">'Imagen Original'</span><span class="s2">)</span>
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">imshow</span><span class="s2">(</span><span class="s0">img_original</span><span class="s2">[</span><span class="s4">5</span><span class="s2">])</span>
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">axis</span><span class="s2">(</span><span class="s3">'off'</span><span class="s2">)</span>
+
+<span class="s5"># Paleta generada</span>
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">subplot</span><span class="s2">(</span><span class="s4">1</span><span class="s2">, </span><span class="s4">2</span><span class="s2">, </span><span class="s4">2</span><span class="s2">)</span>
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">title</span><span class="s2">(</span><span class="s3">'Paleta Generada'</span><span class="s2">)</span>
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">imshow</span><span class="s2">(</span><span class="s0">paleta_final</span><span class="s2">)</span>
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">axis</span><span class="s2">(</span><span class="s3">'off'</span><span class="s2">)</span>
+
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">tight_layout</span><span class="s2">()</span>
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">show</span><span class="s2">()</span><hr class="ls0"><span class="s0">#%% md 
+## 6. Evidencia del desempeño del método construido mostrando la paleta generada para al menos cuatro (4) imágenes de diferentes estilos, con la visualización de la distribución de colores en el espacio de dos dimensiones. <hr class="ls0">#%% md 
+Para evidenciar el desempeño del método KMeans, se presentan la paleta generada y la distribución de los colores en un espacio bidimensional mediante t-SNE. Al comparar la paleta con la proyección t-SNE, se puede verificar si el algoritmo está identificando grupos de colores coherentes y representativos de la imagen original.  <hr class="ls0">#%% md 
+En este punto comparamos la imagen original con la paleta obtenida para verificar si los colores principales fueron bien agrupados <hr class="ls0">#%% md 
+Y podemos generar una máscara o imagen segmentada con la expresión `centroids[labels]`. Ten en cuenta que, para visualizar la imagen correctamente, reescalamos los valores de píxeles al rango original de [0, 255], y volvemos a las dimensiones originales con `reshape()`: <hr class="ls0">#%% 
+</span><span class="s1">def </span><span class="s0">procesar_imagen</span><span class="s2">(</span><span class="s0">img</span><span class="s2">):</span>
+
+    <span class="s5"># 1. Buscar automáticamente el mejor número de clusters</span>
+    <span class="s0">num_clusters </span><span class="s2">= </span><span class="s0">seleccionar_k</span><span class="s2">(</span><span class="s0">img</span><span class="s2">)</span>
+
+    <span class="s5"># 2. Crear el pipeline</span>
+    <span class="s0">pipeline </span><span class="s2">= </span><span class="s0">crear_pipeline</span><span class="s2">(</span><span class="s0">num_clusters</span><span class="s2">)</span>
+
+    <span class="s5"># 3. Entrenar KMeans</span>
+    <span class="s0">pipeline</span><span class="s2">.</span><span class="s0">fit</span><span class="s2">(</span><span class="s0">img</span><span class="s2">)</span>
+
+    <span class="s5"># 4. Obtener KMeans del pipeline</span>
+    <span class="s0">kmeans_model </span><span class="s2">= </span><span class="s0">pipeline</span><span class="s2">.</span><span class="s0">named_steps</span><span class="s2">[</span><span class="s3">'modelo'</span><span class="s2">]</span>
+
+    <span class="s0">labels </span><span class="s2">= </span><span class="s0">kmeans_model</span><span class="s2">.</span><span class="s0">labels_</span>
+    <span class="s0">centroids </span><span class="s2">= </span><span class="s0">kmeans_model</span><span class="s2">.</span><span class="s0">cluster_centers_</span>
+
+    <span class="s5"># 5. Contar cuántos píxeles hay en cada grupo</span>
+    <span class="s0">counts </span><span class="s2">= </span><span class="s0">np</span><span class="s2">.</span><span class="s0">bincount</span><span class="s2">(</span><span class="s0">labels</span><span class="s2">)</span>
+
+    <span class="s5"># 6. Ordenar colores de mayor a menor frecuencia</span>
+    <span class="s0">orden </span><span class="s2">= </span><span class="s0">np</span><span class="s2">.</span><span class="s0">argsort</span><span class="s2">(</span><span class="s0">counts</span><span class="s2">)[::-</span><span class="s4">1</span><span class="s2">]</span>
+
+    <span class="s0">centroids </span><span class="s2">= </span><span class="s0">centroids</span><span class="s2">[</span><span class="s0">orden</span><span class="s2">]</span>
+    <span class="s0">counts </span><span class="s2">= </span><span class="s0">counts</span><span class="s2">[</span><span class="s0">orden</span><span class="s2">]</span>
+
+    <span class="s5"># 7. Volver de 0-1 a 0-255</span>
+    <span class="s0">centroids </span><span class="s2">= (</span><span class="s0">centroids </span><span class="s2">* </span><span class="s4">255</span><span class="s2">).</span><span class="s0">astype</span><span class="s2">(</span><span class="s0">np</span><span class="s2">.</span><span class="s0">uint8</span><span class="s2">)</span>
+
+    <span class="s5"># 8. Crear paleta</span>
+    <span class="s0">paleta </span><span class="s2">= </span><span class="s0">crear_paleta</span><span class="s2">(</span><span class="s0">centroids</span><span class="s2">, </span><span class="s0">counts</span><span class="s2">)</span>
+
+    <span class="s1">return </span><span class="s0">paleta</span><span class="s2">, </span><span class="s0">num_clusters</span><hr class="ls0"><span class="s0">#%% 
+img_original</span><hr class="ls0"><span class="s0">#%% md 
+Creamos listas para guardar las paletas y el número de clústeres de cada imagen, y luego procesamos todas las imágenes una por una <hr class="ls0">#%% 
+paletas </span><span class="s2">= []</span>
+<span class="s0">clusters </span><span class="s2">= []</span>
+
+<span class="s1">for </span><span class="s0">i </span><span class="s1">in </span><span class="s0">range</span><span class="s2">(</span><span class="s0">len</span><span class="s2">(</span><span class="s0">img_original</span><span class="s2">)):</span>
+
+    <span class="s0">print</span><span class="s2">(</span><span class="s3">f&quot;</span><span class="s1">\n</span><span class="s3">Procesando imagen </span><span class="s1">{</span><span class="s0">i </span><span class="s2">+ </span><span class="s4">1</span><span class="s1">} </span><span class="s3">de </span><span class="s1">{</span><span class="s0">len</span><span class="s2">(</span><span class="s0">img_original</span><span class="s2">)</span><span class="s1">}</span><span class="s3">&quot;</span><span class="s2">)</span>
+
+    <span class="s0">paleta</span><span class="s2">, </span><span class="s0">num_clusters </span><span class="s2">= </span><span class="s0">procesar_imagen</span><span class="s2">(</span><span class="s0">img_original</span><span class="s2">[</span><span class="s0">i</span><span class="s2">])</span>
+
+    <span class="s0">paletas</span><span class="s2">.</span><span class="s0">append</span><span class="s2">(</span><span class="s0">paleta</span><span class="s2">)</span>
+    <span class="s0">clusters</span><span class="s2">.</span><span class="s0">append</span><span class="s2">(</span><span class="s0">num_clusters</span><span class="s2">)</span><hr class="ls0"><span class="s0">#%% md 
+Generamos la comparación visual para cada imagen, mostrando la obra original y la paleta de colores predominante resultante. Permitiendo evaluar si el número de clusters seleccionado refleja adecuadamente los colores dominantes de cada imagen. <hr class="ls0">#%% 
+n </span><span class="s2">= </span><span class="s0">len</span><span class="s2">(</span><span class="s0">img_original</span><span class="s2">)</span>
+
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">figure</span><span class="s2">(</span><span class="s0">figsize</span><span class="s2">=(</span><span class="s4">12</span><span class="s2">, </span><span class="s4">4 </span><span class="s2">* </span><span class="s0">n</span><span class="s2">))</span>
+
+<span class="s1">for </span><span class="s0">i </span><span class="s1">in </span><span class="s0">range</span><span class="s2">(</span><span class="s0">n</span><span class="s2">):</span>
+
+    <span class="s5"># Imagen original</span>
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">subplot</span><span class="s2">(</span><span class="s0">n</span><span class="s2">, </span><span class="s4">2</span><span class="s2">, </span><span class="s0">i </span><span class="s2">* </span><span class="s4">2 </span><span class="s2">+ </span><span class="s4">1</span><span class="s2">)</span>
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">imshow</span><span class="s2">(</span><span class="s0">img_original</span><span class="s2">[</span><span class="s0">i</span><span class="s2">])</span>
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">title</span><span class="s2">(</span><span class="s3">f'Imagen </span><span class="s1">{</span><span class="s0">i </span><span class="s2">+ </span><span class="s4">1</span><span class="s1">}</span><span class="s3">'</span><span class="s2">)</span>
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">axis</span><span class="s2">(</span><span class="s3">'off'</span><span class="s2">)</span>
+
+    <span class="s5"># Paleta</span>
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">subplot</span><span class="s2">(</span><span class="s0">n</span><span class="s2">, </span><span class="s4">2</span><span class="s2">, </span><span class="s0">i </span><span class="s2">* </span><span class="s4">2 </span><span class="s2">+ </span><span class="s4">2</span><span class="s2">)</span>
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">imshow</span><span class="s2">(</span><span class="s0">paletas</span><span class="s2">[</span><span class="s0">i</span><span class="s2">])</span>
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">title</span><span class="s2">(</span><span class="s3">f'Paleta - </span><span class="s1">{</span><span class="s0">clusters</span><span class="s2">[</span><span class="s0">i</span><span class="s2">]</span><span class="s1">} </span><span class="s3">colores'</span><span class="s2">)</span>
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">axis</span><span class="s2">(</span><span class="s3">'off'</span><span class="s2">)</span>
+
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">tight_layout</span><span class="s2">()</span>
+<span class="s0">plt</span><span class="s2">.</span><span class="s0">show</span><span class="s2">()</span><hr class="ls0"><span class="s0">#%% md 
+Y para finalizar poyectamos los pixeles de cada imagen en un espacio bidimensional con t-SNE para observar cómo se agrupan los colores, permitiendonos observar si los grupos formados por K-means están bien definidos, motrandonos la distribución de clusters visualmente coherentes y separados. <hr class="ls0">#%% 
+</span><span class="s1">def </span><span class="s0">graficar_tsne</span><span class="s2">(</span><span class="s0">imagen</span><span class="s2">, </span><span class="s0">numero_imagen</span><span class="s2">, </span><span class="s0">k</span><span class="s2">):</span>
+    <span class="s0">pixeles </span><span class="s2">= </span><span class="s0">imagen</span><span class="s2">.</span><span class="s0">reshape</span><span class="s2">(-</span><span class="s4">1</span><span class="s2">, </span><span class="s4">3</span><span class="s2">).</span><span class="s0">astype</span><span class="s2">(</span><span class="s0">np</span><span class="s2">.</span><span class="s0">float64</span><span class="s2">)</span>
+    <span class="s0">pixeles </span><span class="s2">= </span><span class="s0">pixeles </span><span class="s2">/ </span><span class="s4">255.0</span>
+
+    <span class="s0">modelo </span><span class="s2">= </span><span class="s0">KMeans</span><span class="s2">(</span>
+        <span class="s0">n_clusters</span><span class="s2">=</span><span class="s0">k</span><span class="s2">,</span>
+        <span class="s0">random_state</span><span class="s2">=</span><span class="s4">42</span><span class="s2">,</span>
+        <span class="s0">n_init</span><span class="s2">=</span><span class="s4">10</span>
+    <span class="s2">)</span>
+
+    <span class="s0">etiquetas </span><span class="s2">= </span><span class="s0">modelo</span><span class="s2">.</span><span class="s0">fit_predict</span><span class="s2">(</span><span class="s0">pixeles</span><span class="s2">)</span>
+
+    <span class="s0">cantidad </span><span class="s2">= </span><span class="s0">min</span><span class="s2">(</span><span class="s4">500</span><span class="s2">, </span><span class="s0">len</span><span class="s2">(</span><span class="s0">pixeles</span><span class="s2">))</span>
+
+    <span class="s0">generador </span><span class="s2">= </span><span class="s0">np</span><span class="s2">.</span><span class="s0">random</span><span class="s2">.</span><span class="s0">default_rng</span><span class="s2">(</span><span class="s4">42</span><span class="s2">)</span>
+    <span class="s0">indices </span><span class="s2">= </span><span class="s0">generador</span><span class="s2">.</span><span class="s0">choice</span><span class="s2">(</span>
+        <span class="s0">len</span><span class="s2">(</span><span class="s0">pixeles</span><span class="s2">),</span>
+        <span class="s0">cantidad</span><span class="s2">,</span>
+        <span class="s0">replace</span><span class="s2">=</span><span class="s1">False</span>
+    <span class="s2">)</span>
+
+    <span class="s0">pixeles_muestra </span><span class="s2">= </span><span class="s0">pixeles</span><span class="s2">[</span><span class="s0">indices</span><span class="s2">]</span>
+    <span class="s0">etiquetas_muestra </span><span class="s2">= </span><span class="s0">etiquetas</span><span class="s2">[</span><span class="s0">indices</span><span class="s2">]</span>
+
+    <span class="s0">print</span><span class="s2">(</span><span class="s3">'Calculando t-SNE de la imagen'</span><span class="s2">, </span><span class="s0">numero_imagen</span><span class="s2">)</span>
+
+    <span class="s0">tsne </span><span class="s2">= </span><span class="s0">TSNE</span><span class="s2">(</span>
+        <span class="s0">n_components</span><span class="s2">=</span><span class="s4">2</span><span class="s2">,</span>
+        <span class="s0">random_state</span><span class="s2">=</span><span class="s4">42</span><span class="s2">,</span>
+        <span class="s0">perplexity</span><span class="s2">=</span><span class="s4">30</span><span class="s2">,</span>
+        <span class="s0">max_iter</span><span class="s2">=</span><span class="s4">500</span>
+    <span class="s2">)</span>
+
+    <span class="s0">puntos </span><span class="s2">= </span><span class="s0">tsne</span><span class="s2">.</span><span class="s0">fit_transform</span><span class="s2">(</span><span class="s0">pixeles_muestra</span><span class="s2">)</span>
+
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">figure</span><span class="s2">(</span><span class="s0">figsize</span><span class="s2">=(</span><span class="s4">7</span><span class="s2">, </span><span class="s4">5</span><span class="s2">))</span>
+
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">scatter</span><span class="s2">(</span>
+        <span class="s0">puntos</span><span class="s2">[:, </span><span class="s4">0</span><span class="s2">],</span>
+        <span class="s0">puntos</span><span class="s2">[:, </span><span class="s4">1</span><span class="s2">],</span>
+        <span class="s0">c</span><span class="s2">=</span><span class="s0">etiquetas_muestra</span><span class="s2">,</span>
+        <span class="s0">cmap</span><span class="s2">=</span><span class="s3">'tab10'</span><span class="s2">,</span>
+        <span class="s0">s</span><span class="s2">=</span><span class="s4">20</span><span class="s2">,</span>
+        <span class="s0">alpha</span><span class="s2">=</span><span class="s4">0.7</span>
+    <span class="s2">)</span>
+
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">title</span><span class="s2">(</span>
+        <span class="s3">'Distribucion de colores - Imagen ' </span><span class="s2">+</span>
+        <span class="s0">str</span><span class="s2">(</span><span class="s0">numero_imagen</span><span class="s2">) +</span>
+        <span class="s3">' - K=' </span><span class="s2">+</span>
+        <span class="s0">str</span><span class="s2">(</span><span class="s0">k</span><span class="s2">)</span>
+    <span class="s2">)</span>
+
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">xlabel</span><span class="s2">(</span><span class="s3">'t-SNE 1'</span><span class="s2">)</span>
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">ylabel</span><span class="s2">(</span><span class="s3">'t-SNE 2'</span><span class="s2">)</span>
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">colorbar</span><span class="s2">(</span><span class="s0">label</span><span class="s2">=</span><span class="s3">'Grupo de color'</span><span class="s2">)</span>
+    <span class="s0">plt</span><span class="s2">.</span><span class="s0">show</span><span class="s2">()</span><hr class="ls0"><span class="s0">#%% 
+</span><span class="s1">for </span><span class="s0">i </span><span class="s1">in </span><span class="s0">range</span><span class="s2">(</span><span class="s0">len</span><span class="s2">(</span><span class="s0">img_original</span><span class="s2">)):</span>
+    <span class="s0">imagen </span><span class="s2">= </span><span class="s0">img_original</span><span class="s2">[</span><span class="s0">i</span><span class="s2">]</span>
+    <span class="s0">k </span><span class="s2">= </span><span class="s0">clusters</span><span class="s2">[</span><span class="s0">i</span><span class="s2">]</span>
+
+    <span class="s0">graficar_tsne</span><span class="s2">(</span>
+        <span class="s0">imagen</span><span class="s2">,</span>
+        <span class="s0">i </span><span class="s2">+ </span><span class="s4">1</span><span class="s2">,</span>
+        <span class="s0">k</span>
+    <span class="s2">)</span></pre>
+</body>
+</html>
