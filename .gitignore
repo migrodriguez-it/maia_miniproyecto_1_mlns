@@ -6,3 +6,4 @@ Microproyecto1_MLNS_v2.ipynb
 *.gitignore*
 .gitignore
 */drafts/*
+*.ipynb_checkpoints
